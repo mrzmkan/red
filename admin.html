@@ -236,6 +236,11 @@
       margin-bottom: .45rem;
     }
     .multi-entry-row.single-col { grid-template-columns: 1fr auto; }
+    /* فۆنت و ئاراستەی inputە دینامیکیەکان */
+    .multi-entry-row input {
+      font-family: 'Noto Naskh Arabic', serif;
+      direction: rtl;
+    }
     .btn-remove-entry {
       background: transparent;
       border: 1px solid var(--danger, #e55);
@@ -1025,12 +1030,16 @@
       toast('⚠️ تکایە هەموو خانەکان پرکەوە', 'error');
       return;
     }
+    // پاشەکەوتکردنی ئۆتۆماتیکی پێش تاقیکردنەوە
+    saveConfig(cfg);
     updateConnStatus('pending');
     try {
       await fetchDataFromGitHub();
       updateConnStatus('ok');
+      showTopbarStatus();
       toast('✅ بەستەر دروستە!', 'success');
       renderTable();
+      populateScholarForm();
     } catch (e) {
       updateConnStatus('error');
       toast('❌ هەڵە: ' + e.message, 'error');
@@ -1424,6 +1433,8 @@
     const el = document.getElementById('topbar-status');
     if (cfg.owner && cfg.repo && cfg.token) {
       el.innerHTML = `<span class="status-badge status-ok" style="font-size:.78rem;">✅ ${cfg.owner}/${cfg.repo}</span>`;
+    } else if (cfg.owner && cfg.repo && !cfg.token) {
+      el.innerHTML = `<span class="status-badge status-pending" style="font-size:.78rem;">🔑 تۆکێن داخڵ بکە</span>`;
     } else {
       el.innerHTML = `<span class="status-badge status-error" style="font-size:.78rem;">⚠️ ڕێکخستن ناقەدن</span>`;
     }
@@ -1444,24 +1455,31 @@
         toast('✅ داتا بارکرا', 'success');
       } catch (e) {
         toast('⚠️ هەڵەی بارکردن: ' + e.message, 'error');
-        // Attempt to load local data.json as fallback
         try {
-          const res = await fetch('./data.json');
+          const res = await fetch(`./data.json?_=${Date.now()}`);
           allData   = await res.json();
           renderTable();
           populateScholarForm();
         } catch {}
       }
-    } else {
-      // load local fallback so table isn't empty
+    } else if (cfg.owner && cfg.repo && !cfg.token) {
+      // config هەیە بەلام token نییە (پاش ڕیفرێش)
       try {
-        const res = await fetch('./data.json');
+        const res = await fetch(`./data.json?_=${Date.now()}`);
+        allData   = await res.json();
+        renderTable();
+        populateScholarForm();
+      } catch {}
+      toast('🔑 تکایە تۆکێنەکەت دووبارە داخڵ بکە لە ڕێکخستنەکان', 'info');
+      document.querySelector('[data-panel="panel-settings"]').click();
+    } else {
+      try {
+        const res = await fetch(`./data.json?_=${Date.now()}`);
         allData   = await res.json();
         renderTable();
         populateScholarForm();
       } catch {}
       toast('⚙️ تکایە GitHub رێکبخە لە ڕێکخستنەکان', 'info');
-      // Auto-navigate to settings
       document.querySelector('[data-panel="panel-settings"]').click();
     }
   }
