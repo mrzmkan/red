@@ -1128,7 +1128,7 @@
     }
     const json = await res.json();
     fileSHA    = json.sha;
-    const raw  = atob(json.content.replace(/\s/g, ''));
+    const raw  = decodeURIComponent(escape(atob(json.content.replace(/\s/g, ''))));
     allData    = JSON.parse(raw);
     return allData;
   }
