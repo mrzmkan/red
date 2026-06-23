@@ -9,28 +9,6 @@
   },
   "ijazat": [
     {
-      "id": "1782022770601kqaj",
-      "books": [
-        "تجويد"
-      ],
-      "teachers": [
-        {
-          "name": "م اسماعيل",
-          "location": ""
-        },
-        {
-          "name": "م ناظم",
-          "location": ""
-        }
-      ],
-      "bookName": "تجويد",
-      "teacherName": "م اسماعيل",
-      "teacherLocation": "",
-      "gregorianDate": "2023-03-11",
-      "ijazahType": "ئیجازەی عام",
-      "notes": ""
-    },
-    {
       "id": "17820256181937jvv",
       "books": [
         "عقيدة الرازيين"
